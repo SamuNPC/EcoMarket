@@ -2,16 +2,8 @@ package com.ecomarket.ecomarket;
 import com.ecomarket.ecomarket.controller.ProductoController;
 import com.ecomarket.ecomarket.model.*;
 import com.ecomarket.ecomarket.repository.*;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.ecomarket.ecomarket.util.ValidadorRut;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import net.datafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -19,9 +11,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -51,7 +41,6 @@ public class DataLoader implements CommandLineRunner {
     // Generar Productos
     for (int i = 0; i < 10; i++) {
     Producto producto = new Producto();
-    producto.setIdProducto(i+1);
     producto.setNombreProducto(faker.commerce().productName());
     producto.setStock(faker.number().numberBetween(0, 10000));
     double precioDouble = faker.number().randomDouble(2, 2, 10000);
@@ -61,12 +50,11 @@ public class DataLoader implements CommandLineRunner {
     }
     
     // Generar Clientes
-
-    List<String> digitosVerificadores = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "K"); //Mientras no implementamos la validacion del rut//
     for (int i = 0; i < 50; i++) {
     Cliente cliente = new Cliente();
-    cliente.setRun(faker.idNumber().valid());
-    cliente.setDv(digitosVerificadores.get(random.nextInt(digitosVerificadores.size())));
+    int rutnumerico = new Random().nextInt(9000000) + 1000000;
+    cliente.setRun(String.valueOf(rutnumerico));
+    cliente.setDv(ValidadorRut.calcularDv(rutnumerico));
     cliente.setNombres(faker.name().firstName());
     cliente.setApellidos(faker.name().lastName()); 
     clienteRepository.save(cliente);
@@ -77,7 +65,7 @@ public class DataLoader implements CommandLineRunner {
     Compra compra = new Compra();
     compra.setFechaCompra(faker.date().past(30, java.util.concurrent.TimeUnit.DAYS));
     compra.setCliente(clientes.get(random.nextInt(clientes.size())));
-    compra.setNumeroFactura(faker.number().toString());
+    compra.setNumeroFactura(String.valueOf(random.nextInt(999999999)));
     compraRepository.save(compra);
     }
      // Generar Detalles
@@ -86,7 +74,6 @@ public class DataLoader implements CommandLineRunner {
     List<Compra> compras= compraRepository.findAll();
     for (int i = 0; i < 20; i++) {
     Detalle detalle = new Detalle();
-    detalle.setIdDetalle(i + 1);
     detalle.setCantidad(faker.number().numberBetween(1,100));
     double precioUnitariodouble = faker.number().randomDouble(2, 1000, 10000);
     BigDecimal preciouni = BigDecimal.valueOf(precioUnitariodouble);

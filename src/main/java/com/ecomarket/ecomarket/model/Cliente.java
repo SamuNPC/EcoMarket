@@ -20,7 +20,7 @@ public class Cliente {
     private String run;
 
     @Column(name = "DV", nullable = false, length = 1)
-    private String dv;
+    private char dv;
 
     @Column(name = "NOMBRES", nullable = false, length = 100)
     private String nombres;
