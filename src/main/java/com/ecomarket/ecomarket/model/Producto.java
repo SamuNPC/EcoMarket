@@ -23,6 +23,6 @@ public class Producto {
     @Column(name = "STOCK", nullable = false)
     private Integer stock;
 
-    @Column(name = "NOMBRE_PRODUCTO", nullable = false, length = 200)
+    @Column(name = "NOMBRE_PRODUCTO", nullable = false, length = 50)
     private String nombreProducto;
 }

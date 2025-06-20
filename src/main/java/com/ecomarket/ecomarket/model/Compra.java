@@ -36,6 +36,10 @@ public class Compra {
     @JsonIgnoreProperties("compras")
     private Cliente cliente;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "SUCURSAL_ID_SUCURSAL", nullable = false)
+    private Sucursal sucursal;
+
     @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Detalle> detalles = new ArrayList<>();
 }

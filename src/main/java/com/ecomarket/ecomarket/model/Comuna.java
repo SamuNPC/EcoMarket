@@ -25,4 +25,8 @@ public class Comuna {
 
     @Column(name = "NOMBRE_COMUNA", nullable = false, length = 40)
     private String nombreRegion;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "REGION_ID_REGION", nullable = false)
+    private Region region;
 }
