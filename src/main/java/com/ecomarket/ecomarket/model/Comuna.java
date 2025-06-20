@@ -24,7 +24,7 @@ public class Comuna {
     private int id_comuna;
 
     @Column(name = "NOMBRE_COMUNA", nullable = false, length = 40)
-    private String nombreRegion;
+    private String nombreComuna;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "REGION_ID_REGION", nullable = false)
