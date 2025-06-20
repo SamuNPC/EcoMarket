@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Compra {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_COMPRA")
     private int idCompra;
 
@@ -37,11 +36,9 @@ public class Compra {
     private Cliente cliente;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "SUCURSAL_ID_SUCURSAL", nullable = true)
+    @JoinColumn(name = "ID_SUCURSAL", nullable = false)
     private Sucursal sucursal;
 
     @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Detalle> detalles = new ArrayList<>();
 }
-
-

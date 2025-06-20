@@ -1,4 +1,5 @@
 package com.ecomarket.ecomarket.model;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,7 @@ import jakarta.persistence.Id;
 public class Region {
     @Id
     @Column(name = "ID_REGION")
-    private int id_region;
+    private int idRegion;
 
     @Column(name = "NOMBRE_REGION", nullable = false, length = 40)
     private String nombreRegion;
