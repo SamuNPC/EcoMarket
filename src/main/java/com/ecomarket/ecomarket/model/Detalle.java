@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -24,18 +22,18 @@ public class Detalle {
     @Column(name = "CANTIDAD", nullable = false)
     private Integer cantidad;
 
-    @Column(name = "PRECIO_UNITARIO", nullable = false, precision = 12, scale = 2)
-    private BigDecimal precioUnitario;
+    @Column(name = "PRECIO_UNITARIO", nullable = false)
+    private Integer precioUnitario;
 
-    @Column(name = "MET_PAGO", nullable = false, length = 50)
+    @Column(name = "MET_PAGO", nullable = false, length = 20)
     private String metodoPago;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "COMPRA_ID_COMPRA", nullable = false)
-    @JsonIgnoreProperties({"cliente", "detalles"})
+    @JoinColumn(name = "ID_COMPRA", nullable = false)
+    @JsonIgnoreProperties({ "cliente", "detalles" })
     private Compra compra;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "PRODUCTO_ID_PRODUCTO", nullable = false)
+    @JoinColumn(name = "ID_PRODUCTO", nullable = false)
     private Producto producto;
-    }
+}
