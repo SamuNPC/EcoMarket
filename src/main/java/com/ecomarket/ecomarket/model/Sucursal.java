@@ -25,5 +25,4 @@ public class Sucursal {
     @JoinColumn(name = "COMUNA_ID_COMUNA", nullable = false)
     private Comuna comuna;
 
-
 }
