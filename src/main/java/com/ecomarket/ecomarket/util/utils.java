@@ -1,6 +1,6 @@
 package com.ecomarket.ecomarket.util;
 
-    public class ValidadorRut {
+public class utils {
 
     public static boolean esRutValido(String numeroRut, String dv) {
         if (numeroRut == null || dv == null) {
@@ -22,12 +22,13 @@ package com.ecomarket.ecomarket.util;
             return false;
         }
     }
+
     public static char calcularDv(int rut) {
         int m = 0, suma = 1;
         while (rut != 0) {
             suma = (suma + rut % 10 * (9 - m++ % 6)) % 11;
             rut /= 10;
         }
-        return (suma == 0) ? 'K' : (char) (suma + 47);  // 1 → '1', 10 → '0'
+        return (suma == 0) ? 'K' : (char) (suma + 47); // 1 → '1', 10 → '0'
     }
 }
