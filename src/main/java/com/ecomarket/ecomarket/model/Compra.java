@@ -37,7 +37,7 @@ public class Compra {
     private Cliente cliente;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "SUCURSAL_ID_SUCURSAL", nullable = false)
+    @JoinColumn(name = "SUCURSAL_ID_SUCURSAL", nullable = true)
     private Sucursal sucursal;
 
     @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -15,7 +15,5 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer> {
 
     List<Producto> findByStock(int stock);
 
-    List<Producto> findByPrecio(BigDecimal precio);
-
     List<Producto> findByNombreProducto(String nombreProducto);
 }
