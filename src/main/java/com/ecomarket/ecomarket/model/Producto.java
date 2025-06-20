@@ -25,9 +25,6 @@ public class Producto {
     @Column(name = "STOCK", nullable = false)
     private Integer stock;
 
-    @Column(name = "PRECIO", nullable = false, precision = 12, scale = 2)
-    private BigDecimal precio;
-
     @Column(name = "NOMBRE_PRODUCTO", nullable = false, length = 200)
     private String nombreProducto;
 }
