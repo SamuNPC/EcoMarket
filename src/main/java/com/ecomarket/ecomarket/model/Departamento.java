@@ -29,9 +29,7 @@ public class Departamento {
     private Region region;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "DEPARTAMENTO_ID_DEPARTAMENTO", nullable = false)
-    private Empleado empleado;
+    @JoinColumn(name = "COMUNA_ID_COMUNA", nullable = false)
+    private Comuna comuna;
     
-
-
 }
