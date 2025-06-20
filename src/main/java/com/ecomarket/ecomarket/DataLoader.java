@@ -44,9 +44,6 @@ public class DataLoader implements CommandLineRunner {
             Producto producto = new Producto();
             producto.setNombreProducto(faker.commerce().productName());
             producto.setStock(faker.number().numberBetween(0, 10000));
-            double precioDouble = faker.number().randomDouble(2, 2, 10000);
-            BigDecimal precio = BigDecimal.valueOf(precioDouble);
-            producto.setPrecio(precio);
             productoRepository.save(producto);
         }
 

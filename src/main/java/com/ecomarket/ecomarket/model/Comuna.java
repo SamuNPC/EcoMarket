@@ -1,5 +1,28 @@
 package com.ecomarket.ecomarket.model;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
+@Entity
+@Table(name = "COMUNA")
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 
 public class Comuna {
+    @Id
+    @Column(name = "ID_COMUNA")
+    private int id_comuna;
 
+    @Column(name = "NOMBRE_COMUNA", nullable = false, length = 40)
+    private String nombreRegion;
 }

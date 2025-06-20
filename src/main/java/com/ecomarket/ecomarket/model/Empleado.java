@@ -1,6 +1,8 @@
 package com.ecomarket.ecomarket.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -18,7 +20,7 @@ import lombok.NoArgsConstructor;
 public class Empleado {
 
     @Id
-    @Column(name = "RUN_EMP", nullable = false, length = 12)
+    @Column(name = "RUN_EMPLEADO", nullable = false, length = 12)
     private String run_emp;
 
     @Column(name = "DV", nullable = false, length = 1)
@@ -36,10 +38,9 @@ public class Empleado {
     @Column(name = "FEC_CONTRATO_EMP", nullable = false)
     private Date fec_contraro_emp;
 
-    @Column(name = "EMAIL_EMP", nullable = false, length = 50)
+    @Column(name = "EMAIL_EMP", nullable = false, length = 30)
     private String email_emp;
 
-    @Column(name = "PASSWORD_EMP_HASH", nullable = false, length = 255)
-    private String password_emp;
-
+    @OneToMany(mappedBy = "departamento", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Empleado> empleados = new ArrayList<>();
 }
