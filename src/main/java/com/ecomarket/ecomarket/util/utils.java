@@ -2,22 +2,22 @@ package com.ecomarket.ecomarket.util;
 
 public class utils {
 
-    public static boolean esRutValido(String numeroRut, String dv) {
-        if (numeroRut == null || dv == null) {
+    public static boolean esRutValido(String numeroRut, char dv) {
+        if (numeroRut == null) {
             return false;
         }
         // Eliminar puntos y espacios
         numeroRut = numeroRut.replace(".", "").trim();
-        dv = dv.trim().toUpperCase();
+        String dvStr = ("" + dv).trim().toUpperCase();
 
-        if (numeroRut.isEmpty() || dv.isEmpty()) {
+        if (numeroRut.isEmpty() || dvStr.isEmpty()) {
             return false;
         }
 
         try {
             int rutNumerico = Integer.parseInt(numeroRut);
             char dvEsperado = calcularDv(rutNumerico);
-            return dv.equals(String.valueOf(dvEsperado));
+            return dvStr.equalsIgnoreCase(String.valueOf(dvEsperado));
         } catch (NumberFormatException e) {
             return false;
         }

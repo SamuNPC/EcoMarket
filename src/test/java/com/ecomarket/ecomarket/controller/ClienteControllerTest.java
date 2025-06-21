@@ -2,6 +2,7 @@ package com.ecomarket.ecomarket.controller;
 
 import com.ecomarket.ecomarket.model.Cliente;
 import com.ecomarket.ecomarket.repository.ClienteRepository;
+import com.ecomarket.ecomarket.util.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -117,8 +119,10 @@ class ClienteControllerTest {
 
     @Test
     void testCreateCliente() throws Exception {
-        // Given
-        Cliente nuevoCliente = new Cliente("11111111", '1', "Carlos", "Rodríguez");
+        
+        Cliente nuevoCliente = new Cliente("21545655", '2', "Carlos", "Rodríguez");
+        // Validar RUT antes de continuar
+        assertTrue(utils.esRutValido(nuevoCliente.getRun(), nuevoCliente.getDv()), "El RUT no es válido");
         when(clienteRepository.save(any(Cliente.class))).thenReturn(nuevoCliente);
 
         // When & Then
@@ -127,8 +131,8 @@ class ClienteControllerTest {
                 .content(objectMapper.writeValueAsString(nuevoCliente)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.run", is("11111111")))
-                .andExpect(jsonPath("$.dv", is("1")))
+                .andExpect(jsonPath("$.run", is("21545655")))
+                .andExpect(jsonPath("$.dv", is("2")))
                 .andExpect(jsonPath("$.nombres", is("Carlos")))
                 .andExpect(jsonPath("$.apellidos", is("Rodríguez")));
 
