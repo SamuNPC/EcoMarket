@@ -24,7 +24,7 @@ public class Comuna {
     @Column(name = "ID_COMUNA")
     private int idComuna;
 
-    @Column(name = "NOMBRE_COMUNA", nullable = false, length = 9)
+    @Column(name = "NOMBRE_COMUNA", nullable = false, length = 40)
     private String nombreComuna;
 
     @ManyToOne(fetch = FetchType.EAGER)

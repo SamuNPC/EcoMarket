@@ -98,6 +98,15 @@ public class DataLoader implements CommandLineRunner {
         for (Comuna comuna : comunas) {
             comunaRepository.save(comuna);
         }
+
+        // Generar Sucursales
+        for (int i = 0; i < 10; i++) {
+            Sucursal sucursal = new Sucursal();
+            sucursal.setIdSucursal(i + 1);
+            sucursal.setDireccionSucursal(faker.address().fullAddress());
+            sucursal.setComuna(comunas.get(random.nextInt(comunas.size())));
+            sucursalRepository.save(sucursal);
+        }
         
         // Generar Productos
         for (int i = 0; i < 10; i++) {
