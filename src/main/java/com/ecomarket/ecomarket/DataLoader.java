@@ -119,13 +119,19 @@ public class DataLoader implements CommandLineRunner {
         // Generar Clientes
         for (int i = 0; i < 50; i++) {
             Cliente cliente = new Cliente();
-            int rutnumerico = random.nextInt(9000000) + 1000000;
-            cliente.setRun(String.valueOf(rutnumerico));
-            cliente.setDv(utils.calcularDv(rutnumerico));
-            cliente.setNombres(faker.name().firstName());
-            cliente.setApellidos(faker.name().lastName());
-            clienteRepository.save(cliente);
+            while(cliente.getRun() == null || cliente.getRun().isEmpty()){
+                int rutnumerico = random.nextInt(9000000) + 1000000;
+                String Stringrut = String.valueOf(rutnumerico);
+                char dv = utils.calcularDv(rutnumerico);
+                if (utils.esRutValido(Stringrut, dv)){
+                    cliente.setRun(Stringrut);
+                    cliente.setDv(dv);
+                    cliente.setNombres(faker.name().firstName());
+                    cliente.setApellidos(faker.name().lastName());
+                    clienteRepository.save(cliente);}
+                    break;
         }
+    }
 
         // Generar compras
         List<Cliente> clientes = clienteRepository.findAll();
