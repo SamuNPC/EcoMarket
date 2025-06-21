@@ -22,9 +22,9 @@ public class Cliente {
     @Column(name = "DV", nullable = false, length = 1)
     private char dv;
 
-    @Column(name = "NOMBRES", nullable = false, length = 100)
+    @Column(name = "NOMBRES", nullable = false, length = 30)
     private String nombres;
 
-    @Column(name = "APELLIDOS", nullable = false, length = 100)
+    @Column(name = "APELLIDOS", nullable = false, length = 30)
     private String apellidos;
 }

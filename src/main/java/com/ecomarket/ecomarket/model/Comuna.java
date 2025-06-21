@@ -1,4 +1,5 @@
 package com.ecomarket.ecomarket.model;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
@@ -21,12 +22,12 @@ import jakarta.persistence.ManyToOne;
 public class Comuna {
     @Id
     @Column(name = "ID_COMUNA")
-    private int id_comuna;
+    private int idComuna;
 
     @Column(name = "NOMBRE_COMUNA", nullable = false, length = 40)
     private String nombreComuna;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "REGION_ID_REGION", nullable = false)
+    @JoinColumn(name = "ID_REGION", nullable = false)
     private Region region;
 }

@@ -1,4 +1,5 @@
 package com.ecomarket.ecomarket.model;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
@@ -12,17 +13,16 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Sucursal { 
+public class Sucursal {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_SUCURSAL")
     private int idSucursal;
 
-    @Column(name = "DIR_SUCURSAL", nullable = false, length = 50)
-    private String DireccionSucursal;
+    @Column(name = "DIR_SUCURSAL", length = 100)
+    private String direccionSucursal;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "COMUNA_ID_COMUNA", nullable = false)
+    @JoinColumn(name = "ID_COMUNA")
     private Comuna comuna;
 
 }
