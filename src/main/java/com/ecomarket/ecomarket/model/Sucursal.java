@@ -18,7 +18,7 @@ public class Sucursal {
     @Column(name = "ID_SUCURSAL")
     private int idSucursal;
 
-    @Column(name = "DIR_SUCURSAL", length = 50)
+    @Column(name = "DIR_SUCURSAL", length = 100)
     private String direccionSucursal;
 
     @ManyToOne(fetch = FetchType.EAGER)

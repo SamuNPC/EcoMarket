@@ -37,44 +37,77 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Faker faker = new Faker();
         Random random = new Random();
+    
+    List<Region> regiones = Arrays.asList(
+        new Region(2,"Antofagasta"),
+        new Region(13,"Metropolitana de Santiago"),
+        new Region(14,"Los Ríos")
+    );
+    for (Region region : regiones) {
+        regionRepository.save(region);
+    }
 
-        // Generar Regiones
-        Region region1 = new Region();
-        region1.setIdRegion(1);
-        region1.setNombreRegion("Región Metropolitana");
-        regionRepository.save(region1);
-
-        Region region2 = new Region();
-        region2.setIdRegion(2);
-        region2.setNombreRegion("Valparaíso");
-        regionRepository.save(region2);
-
-        // Generar Comunas
-        Comuna comuna1 = new Comuna();
-        comuna1.setIdComuna(1);
-        comuna1.setNombreComuna("Santiago");
-        comuna1.setRegion(region1);
-        comunaRepository.save(comuna1);
-
-        Comuna comuna2 = new Comuna();
-        comuna2.setIdComuna(2);
-        comuna2.setNombreComuna("Valparaí");
-        comuna2.setRegion(region2);
-        comunaRepository.save(comuna2);
+    // Generar Comunas
+            
+    List<Comuna> comunas = Arrays.asList(
+        new Comuna(1, "Antofagasta", regiones.get(0)),
+        new Comuna(2, "Mejillones", regiones.get(0)),
+        new Comuna(3, "Sierra Gorda", regiones.get(0)),
+        new Comuna(4, "Taltal", regiones.get(0)),
+        new Comuna(2, "Santiago", regiones.get(1)),
+        new Comuna(3, "Cerrillos", regiones.get(1)),
+        new Comuna(4, "Cerro Navia", regiones.get(1)),
+        new Comuna(5, "Conchalí", regiones.get(1)),
+        new Comuna(6, "El Bosque", regiones.get(1)),
+        new Comuna(7, "Estación Central", regiones.get(1)),
+        new Comuna(8, "Huechuraba", regiones.get(1)),
+        new Comuna(9, "Independencia", regiones.get(1)),
+        new Comuna(10, "La Cisterna", regiones.get(1)),
+        new Comuna(11, "La Florida", regiones.get(1)),
+        new Comuna(12, "La Granja", regiones.get(1)),
+        new Comuna(13, "La Pintana", regiones.get(1)),
+        new Comuna(14, "La Reina", regiones.get(1)),
+        new Comuna(15, "Las Condes", regiones.get(1)),
+        new Comuna(16, "Lo Barnechea", regiones.get(1)),
+        new Comuna(17, "Lo Espejo", regiones.get(1)),
+        new Comuna(18, "Lo Prado", regiones.get(1)),
+        new Comuna(19, "Macul", regiones.get(1)),
+        new Comuna(20, "Maipú", regiones.get(1)),
+        new Comuna(21, "Ñuñoa", regiones.get(1)),
+        new Comuna(22, "Pedro Aguirre Cerda", regiones.get(1)),
+        new Comuna(23, "Peñalolén", regiones.get(1)),
+        new Comuna(24, "Providencia", regiones.get(1)),
+        new Comuna(25, "Pudahuel", regiones.get(1)),
+        new Comuna(26, "Quilicura", regiones.get(1)),
+        new Comuna(27, "Quinta Normal", regiones.get(1)),
+        new Comuna(28, "Recoleta", regiones.get(1)),
+        new Comuna(29, "Renca", regiones.get(1)),
+        new Comuna(30, "San Joaquín", regiones.get(1)),
+        new Comuna(31, "San Miguel", regiones.get(1)),
+        new Comuna(32, "San Ramón", regiones.get(1)),
+        new Comuna(33, "Vitacura", regiones.get(1)),
+        new Comuna(37, "Valdivia", regiones.get(2)),
+        new Comuna(38, "Corral", regiones.get(2)),
+        new Comuna(39, "Lanco", regiones.get(2)),
+        new Comuna(40, "Los Lagos", regiones.get(2)),
+        new Comuna(41, "Máfil", regiones.get(2)),
+        new Comuna(42, "Mariquina", regiones.get(2)),
+        new Comuna(43, "Paillaco", regiones.get(2)),
+        new Comuna(44, "Panguipulli", regiones.get(2))
+        );
+        for (Comuna comuna : comunas) {
+            comunaRepository.save(comuna);
+        }
 
         // Generar Sucursales
-        Sucursal sucursal1 = new Sucursal();
-        sucursal1.setIdSucursal(1);
-        sucursal1.setDireccionSucursal("Av. Providencia 123");
-        sucursal1.setComuna(comuna1);
-        sucursalRepository.save(sucursal1);
-
-        Sucursal sucursal2 = new Sucursal();
-        sucursal2.setIdSucursal(2);
-        sucursal2.setDireccionSucursal("Av. Libertad 456");
-        sucursal2.setComuna(comuna2);
-        sucursalRepository.save(sucursal2);
-
+        for (int i = 0; i < 10; i++) {
+            Sucursal sucursal = new Sucursal();
+            sucursal.setIdSucursal(i + 1);
+            sucursal.setDireccionSucursal(faker.address().fullAddress());
+            sucursal.setComuna(comunas.get(random.nextInt(comunas.size())));
+            sucursalRepository.save(sucursal);
+        }
+        
         // Generar Productos
         for (int i = 0; i < 10; i++) {
             Producto producto = new Producto();
