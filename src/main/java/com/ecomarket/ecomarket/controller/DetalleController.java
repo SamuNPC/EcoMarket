@@ -1,7 +1,6 @@
 package com.ecomarket.ecomarket.controller;
 
 
-import com.ecomarket.ecomarket.model.Cliente;
 import com.ecomarket.ecomarket.model.Detalle;
 import com.ecomarket.ecomarket.repository.DetalleRepository;
 import io.swagger.v3.oas.annotations.Operation;

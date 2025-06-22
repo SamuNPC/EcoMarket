@@ -4,9 +4,13 @@ import com.ecomarket.ecomarket.model.Compra;
 import com.ecomarket.ecomarket.repository.CompraRepository;
 
 import java.util.List;
-
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -44,7 +48,29 @@ public class CompraController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    
     }
+    @Operation(summary = "Obtener compras por rango de fechas", description = "Devuelve una lista de compras entre dos fechas (formato: yyyy-MM-dd).")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Lista de compras obtenida correctamente"),
+        @ApiResponse(responseCode = "400", description = "Formato de fecha inválido")
+    })
+    @GetMapping("/rango/{fechaInicio}/{fechaFin}")
+    public List<Compra> getComprasByFecha(
+            @Parameter(description = "Fecha de inicio (yyyy-MM-dd)") @PathVariable String fechaInicio,
+            @Parameter(description = "Fecha de fin (yyyy-MM-dd)") @PathVariable String fechaFin) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date fechaInicioDate;
+        Date fechaFinDate;
+        try {
+            fechaInicioDate = dateFormat.parse(fechaInicio);
+            fechaFinDate = dateFormat.parse(fechaFin);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Formato de fecha inválido");
+        }
+        return compraRepository.findByFechaCompraBetween(fechaInicioDate, fechaFinDate);
+    }
+    
 
     @Operation(summary = "Crear una nueva compra", description = "Crea una nueva compra.")
     @ApiResponses({

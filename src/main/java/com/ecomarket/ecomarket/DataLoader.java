@@ -139,7 +139,7 @@ public class DataLoader implements CommandLineRunner {
         for (int i = 0; i < 10; i++) {
             Compra compra = new Compra();
             compra.setIdCompra(i + 1);
-            compra.setFechaCompra(new java.util.Date());
+            compra.setFechaCompra(faker.date().past(30, java.util.concurrent.TimeUnit.DAYS));
             compra.setCliente(clientes.get(random.nextInt(clientes.size())));
             compra.setNumeroFactura(String.valueOf(random.nextInt(999999999)));
             compra.setSucursal(sucursales.get(random.nextInt(sucursales.size())));
