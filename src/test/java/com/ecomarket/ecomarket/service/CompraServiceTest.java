@@ -1,5 +1,6 @@
 package com.ecomarket.ecomarket.service;
 
+import com.ecomarket.ecomarket.exception.ResourceNotFoundException;
 import com.ecomarket.ecomarket.model.Cliente;
 import com.ecomarket.ecomarket.model.Compra;
 import com.ecomarket.ecomarket.model.Sucursal;
@@ -113,11 +114,12 @@ class CompraServiceTest {
         int idCompra = 999;
         when(compraRepository.findById(idCompra)).thenReturn(Optional.empty());
 
-        // When
-        Compra resultado = compraService.getCompraById(idCompra);
+        // When & Then
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            compraService.getCompraById(idCompra);
+        });
 
-        // Then
-        assertNull(resultado);
+        assertEquals("Compra no encontrado con ID: 999", exception.getMessage());
         verify(compraRepository).findById(idCompra);
     }
 
@@ -173,13 +175,17 @@ class CompraServiceTest {
     void testGetCompraByIdConValoresLimite() {
         // Test con ID 0
         when(compraRepository.findById(0)).thenReturn(Optional.empty());
-        Compra resultado = compraService.getCompraById(0);
-        assertNull(resultado);
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            compraService.getCompraById(0);
+        });
+        assertEquals("Compra no encontrado con ID: 0", exception.getMessage());
 
         // Test con ID negativo
         when(compraRepository.findById(-1)).thenReturn(Optional.empty());
-        resultado = compraService.getCompraById(-1);
-        assertNull(resultado);
+        exception = assertThrows(ResourceNotFoundException.class, () -> {
+            compraService.getCompraById(-1);
+        });
+        assertEquals("Compra no encontrado con ID: -1", exception.getMessage());
 
         verify(compraRepository).findById(0);
         verify(compraRepository).findById(-1);
