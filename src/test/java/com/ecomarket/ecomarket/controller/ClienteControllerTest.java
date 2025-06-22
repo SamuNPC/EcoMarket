@@ -51,10 +51,8 @@ class ClienteControllerTest {
 
     @Test
     void testGetAllClientes() throws Exception {
-        // Given
         when(clienteRepository.findAll()).thenReturn(clientesList);
 
-        // When & Then
         mockMvc.perform(get("/api/clientes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -73,10 +71,9 @@ class ClienteControllerTest {
 
     @Test
     void testGetAllClientesListaVacia() throws Exception {
-        // Given
+
         when(clienteRepository.findAll()).thenReturn(Arrays.asList());
 
-        // When & Then
         mockMvc.perform(get("/api/clientes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -87,11 +84,9 @@ class ClienteControllerTest {
 
     @Test
     void testGetClienteByRunExistente() throws Exception {
-        // Given
         String run = "12345678";
         when(clienteRepository.findByRun(run)).thenReturn(Arrays.asList(cliente1));
 
-        // When & Then
         mockMvc.perform(get("/api/clientes/{run}", run))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -105,11 +100,9 @@ class ClienteControllerTest {
 
     @Test
     void testGetClienteByRunNoExistente() throws Exception {
-        // Given
         String run = "99999999";
         when(clienteRepository.findByRun(run)).thenReturn(Arrays.asList());
 
-        // When & Then
         mockMvc.perform(get("/api/clientes/{run}", run))
                 .andExpect(status().isOk())
                 .andExpect(content().string(""));
@@ -121,11 +114,9 @@ class ClienteControllerTest {
     void testCreateCliente() throws Exception {
         
         Cliente nuevoCliente = new Cliente("21545655", '2', "Carlos", "Rodríguez");
-        // Validar RUT antes de continuar
         assertTrue(utils.esRutValido(nuevoCliente.getRun(), nuevoCliente.getDv()), "El RUT no es válido");
         when(clienteRepository.save(any(Cliente.class))).thenReturn(nuevoCliente);
 
-        // When & Then
         mockMvc.perform(post("/api/clientes")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(nuevoCliente)))
@@ -141,13 +132,12 @@ class ClienteControllerTest {
 
     @Test
     void testUpdateClienteExistente() throws Exception {
-        // Given
+
         String run = "12345678";
         Cliente clienteActualizado = new Cliente(run, '9', "Juan Carlos", "Pérez López");
         when(clienteRepository.existsById(run)).thenReturn(true);
         when(clienteRepository.save(any(Cliente.class))).thenReturn(clienteActualizado);
 
-        // When & Then
         mockMvc.perform(put("/api/clientes/{run}", run)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(clienteActualizado)))
@@ -163,12 +153,10 @@ class ClienteControllerTest {
 
     @Test
     void testUpdateClienteNoExistente() throws Exception {
-        // Given
         String run = "99999999";
         Cliente cliente = new Cliente(run, '1', "No", "Existe");
         when(clienteRepository.existsById(run)).thenReturn(false);
 
-        // When & Then
         mockMvc.perform(put("/api/clientes/{run}", run)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(cliente)))
@@ -181,11 +169,9 @@ class ClienteControllerTest {
 
     @Test
     void testDeleteCliente() throws Exception {
-        // Given
         String run = "12345678";
         doNothing().when(clienteRepository).deleteById(run);
 
-        // When & Then
         mockMvc.perform(delete("/api/clientes/{run}", run))
                 .andExpect(status().isOk());
 
@@ -194,14 +180,12 @@ class ClienteControllerTest {
 
     @Test
     void testCreateClienteConDatosIncompletos() throws Exception {
-        // Given
         Cliente clienteIncompleto = new Cliente();
         clienteIncompleto.setRun("11111111");
-        // Sin DV, nombres y apellidos
+
 
         when(clienteRepository.save(any(Cliente.class))).thenReturn(clienteIncompleto);
 
-        // When & Then
         mockMvc.perform(post("/api/clientes")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(clienteIncompleto)))
@@ -213,11 +197,10 @@ class ClienteControllerTest {
 
     @Test
     void testGetClienteByRunConCaracteresEspeciales() throws Exception {
-        // Given
+
         String runEspecial = "12345678-9";
         when(clienteRepository.findByRun(runEspecial)).thenReturn(Arrays.asList());
 
-        // When & Then
         mockMvc.perform(get("/api/clientes/{run}", runEspecial))
                 .andExpect(status().isOk());
 
