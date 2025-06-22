@@ -1,10 +1,14 @@
 package com.ecomarket.ecomarket.controller;
+import com.ecomarket.ecomarket.util.utils;
 
 import com.ecomarket.ecomarket.model.Cliente;
 import com.ecomarket.ecomarket.repository.ClienteRepository;
 
 import java.util.List;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/clientes")
@@ -29,7 +33,12 @@ public class ClienteController {
 
     @PostMapping
     public Cliente createCliente(@RequestBody Cliente cliente) {
-        return clienteRepository.save(cliente);
+        if (utils.esRutValido(cliente.getRun(), cliente.getDv()) == true){
+            return clienteRepository.save(cliente);
+        }
+        throw new ResponseStatusException(
+        HttpStatus.BAD_REQUEST, "El RUT ingresado no es válido"
+    );
     }
 
     @PutMapping("/{run}")
