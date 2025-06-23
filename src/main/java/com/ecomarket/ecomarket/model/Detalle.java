@@ -3,7 +3,9 @@ package com.ecomarket.ecomarket.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -12,7 +14,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Detalle {
+@EqualsAndHashCode(callSuper = false)
+public class Detalle extends RepresentationModel<Detalle> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

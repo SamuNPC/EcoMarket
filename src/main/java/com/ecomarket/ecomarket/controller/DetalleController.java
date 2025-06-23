@@ -22,6 +22,12 @@ public class DetalleController {
 
     private final DetalleService detalleService;
 
+    // Constants for link relations
+    private static final String REL_DETALLES = "detalles";
+    private static final String REL_UPDATE = "update";
+    private static final String REL_DELETE = "delete";
+    private static final String REL_COMPRA = "compra";
+
     public DetalleController(DetalleService detalleService) {
         this.detalleService = detalleService;
     }
@@ -33,11 +39,11 @@ public class DetalleController {
         List<Detalle> detalles = detalleService.getAllDetalles();
 
         List<EntityModel<Detalle>> detallesWithLinks = detalles.stream()
-                .map(this::toEntityModel)
+                .map(this::addLinksToDetalle)
                 .toList();
 
         CollectionModel<EntityModel<Detalle>> collectionModel = CollectionModel.of(detallesWithLinks);
-        collectionModel.add(linkTo(methodOn(DetalleController.class).getAllDetalles()).withSelfRel());
+        collectionModel.add(linkTo(DetalleController.class).withSelfRel());
 
         return ResponseEntity.ok(collectionModel);
     }
@@ -49,7 +55,7 @@ public class DetalleController {
     public ResponseEntity<EntityModel<Detalle>> getDetalleById(
             @Parameter(description = "ID del detalle") @PathVariable int idDetalle) {
         Detalle detalle = detalleService.getDetalleById(idDetalle);
-        EntityModel<Detalle> detalleModel = toEntityModel(detalle);
+        EntityModel<Detalle> detalleModel = addLinksToDetalle(detalle);
         return ResponseEntity.ok(detalleModel);
     }
 
@@ -58,7 +64,7 @@ public class DetalleController {
     @PostMapping
     public ResponseEntity<EntityModel<Detalle>> createDetalle(@RequestBody Detalle detalle) {
         Detalle nuevoDetalle = detalleService.createDetalle(detalle);
-        EntityModel<Detalle> detalleModel = toEntityModel(nuevoDetalle);
+        EntityModel<Detalle> detalleModel = addLinksToDetalle(nuevoDetalle);
         return ResponseEntity.status(HttpStatus.CREATED).body(detalleModel);
     }
 
@@ -70,7 +76,7 @@ public class DetalleController {
             @Parameter(description = "ID del detalle a actualizar") @PathVariable int idDetalle,
             @RequestBody Detalle detalle) {
         Detalle detalleActualizado = detalleService.updateDetalle(idDetalle, detalle);
-        EntityModel<Detalle> detalleModel = toEntityModel(detalleActualizado);
+        EntityModel<Detalle> detalleModel = addLinksToDetalle(detalleActualizado);
         return ResponseEntity.ok(detalleModel);
     }
 
@@ -83,19 +89,18 @@ public class DetalleController {
         return ResponseEntity.noContent().build();
     }
 
-    // Método auxiliar para crear EntityModel con enlaces HATEOAS
-    private EntityModel<Detalle> toEntityModel(Detalle detalle) {
+    // Helper method to add HATEOAS links to Detalle
+    private EntityModel<Detalle> addLinksToDetalle(Detalle detalle) {
         EntityModel<Detalle> detalleModel = EntityModel.of(detalle)
-                .add(linkTo(methodOn(DetalleController.class).getDetalleById(detalle.getIdDetalle())).withSelfRel())
-                .add(linkTo(methodOn(DetalleController.class).updateDetalle(detalle.getIdDetalle(), detalle))
-                        .withRel("update"))
-                .add(linkTo(methodOn(DetalleController.class).deleteDetalle(detalle.getIdDetalle())).withRel("delete"))
-                .add(linkTo(methodOn(DetalleController.class).getAllDetalles()).withRel("all-detalles"));
+                .add(linkTo(DetalleController.class).slash(detalle.getIdDetalle()).withSelfRel())
+                .add(linkTo(DetalleController.class).slash(detalle.getIdDetalle()).withRel(REL_UPDATE))
+                .add(linkTo(DetalleController.class).slash(detalle.getIdDetalle()).withRel(REL_DELETE))
+                .add(linkTo(DetalleController.class).withRel(REL_DETALLES));
 
-        // Enlace a la compra asociada
+        // Link to associated compra
         if (detalle.getCompra() != null) {
-            detalleModel.add(linkTo(methodOn(CompraController.class).getCompraById(detalle.getCompra().getIdCompra()))
-                    .withRel("compra"));
+            detalleModel
+                    .add(linkTo(CompraController.class).slash(detalle.getCompra().getIdCompra()).withRel(REL_COMPRA));
         }
 
         return detalleModel;

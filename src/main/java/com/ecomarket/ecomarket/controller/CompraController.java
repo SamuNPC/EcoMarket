@@ -23,6 +23,13 @@ public class CompraController {
 
     private final CompraService compraService;
 
+    // Constants for link relations
+    private static final String REL_COMPRAS = "compras";
+    private static final String REL_UPDATE = "update";
+    private static final String REL_DELETE = "delete";
+    private static final String REL_CLIENTE = "cliente";
+    private static final String REL_DETALLES = "detalles";
+
     public CompraController(CompraService compraService) {
         this.compraService = compraService;
     }
@@ -34,11 +41,11 @@ public class CompraController {
         List<Compra> compras = compraService.getAllCompras();
 
         List<EntityModel<Compra>> comprasWithLinks = compras.stream()
-                .map(this::toEntityModel)
+                .map(this::addLinksToCompra)
                 .toList();
 
         CollectionModel<EntityModel<Compra>> collectionModel = CollectionModel.of(comprasWithLinks);
-        collectionModel.add(linkTo(methodOn(CompraController.class).getAllCompras()).withSelfRel());
+        collectionModel.add(linkTo(CompraController.class).withSelfRel());
 
         return ResponseEntity.ok(collectionModel);
     }
@@ -50,7 +57,7 @@ public class CompraController {
     public ResponseEntity<EntityModel<Compra>> getCompraById(
             @Parameter(description = "ID de la compra") @PathVariable int idCompra) {
         Compra compra = compraService.getCompraById(idCompra);
-        EntityModel<Compra> compraModel = toEntityModel(compra);
+        EntityModel<Compra> compraModel = addLinksToCompra(compra);
         return ResponseEntity.ok(compraModel);
     }
 
@@ -64,13 +71,13 @@ public class CompraController {
         List<Compra> compras = compraService.getComprasByFecha(fechaInicio, fechaFin);
 
         List<EntityModel<Compra>> comprasWithLinks = compras.stream()
-                .map(this::toEntityModel)
+                .map(this::addLinksToCompra)
                 .toList();
 
         CollectionModel<EntityModel<Compra>> collectionModel = CollectionModel.of(comprasWithLinks);
         collectionModel
-                .add(linkTo(methodOn(CompraController.class).getComprasByFecha(fechaInicio, fechaFin)).withSelfRel());
-        collectionModel.add(linkTo(methodOn(CompraController.class).getAllCompras()).withRel("all-compras"));
+                .add(linkTo(CompraController.class).slash("rango").slash(fechaInicio).slash(fechaFin).withSelfRel());
+        collectionModel.add(linkTo(CompraController.class).withRel(REL_COMPRAS));
 
         return ResponseEntity.ok(collectionModel);
     }
@@ -80,7 +87,7 @@ public class CompraController {
     @PostMapping
     public ResponseEntity<EntityModel<Compra>> createCompra(@RequestBody Compra compra) {
         Compra nuevaCompra = compraService.createCompra(compra);
-        EntityModel<Compra> compraModel = toEntityModel(nuevaCompra);
+        EntityModel<Compra> compraModel = addLinksToCompra(nuevaCompra);
         return ResponseEntity.status(HttpStatus.CREATED).body(compraModel);
     }
 
@@ -92,7 +99,7 @@ public class CompraController {
             @Parameter(description = "ID de la compra a actualizar") @PathVariable Integer idCompra,
             @RequestBody Compra compra) {
         Compra compraActualizada = compraService.updateCompra(idCompra, compra);
-        EntityModel<Compra> compraModel = toEntityModel(compraActualizada);
+        EntityModel<Compra> compraModel = addLinksToCompra(compraActualizada);
         return ResponseEntity.ok(compraModel);
     }
 
@@ -105,23 +112,21 @@ public class CompraController {
         return ResponseEntity.noContent().build();
     }
 
-    // Método auxiliar para crear EntityModel con enlaces HATEOAS
-    private EntityModel<Compra> toEntityModel(Compra compra) {
+    // Helper method to add HATEOAS links to Compra
+    private EntityModel<Compra> addLinksToCompra(Compra compra) {
         EntityModel<Compra> compraModel = EntityModel.of(compra)
-                .add(linkTo(methodOn(CompraController.class).getCompraById(compra.getIdCompra())).withSelfRel())
-                .add(linkTo(methodOn(CompraController.class).updateCompra(compra.getIdCompra(), compra))
-                        .withRel("update"))
-                .add(linkTo(methodOn(CompraController.class).deleteCompra(compra.getIdCompra())).withRel("delete"))
-                .add(linkTo(methodOn(CompraController.class).getAllCompras()).withRel("all-compras"));
+                .add(linkTo(CompraController.class).slash(compra.getIdCompra()).withSelfRel())
+                .add(linkTo(CompraController.class).slash(compra.getIdCompra()).withRel(REL_UPDATE))
+                .add(linkTo(CompraController.class).slash(compra.getIdCompra()).withRel(REL_DELETE))
+                .add(linkTo(CompraController.class).withRel(REL_COMPRAS));
 
-        // Enlace al cliente asociado
+        // Link to associated cliente
         if (compra.getCliente() != null) {
-            compraModel.add(linkTo(methodOn(ClienteController.class).getClienteByRun(compra.getCliente().getRun()))
-                    .withRel("cliente"));
+            compraModel.add(linkTo(ClienteController.class).slash(compra.getCliente().getRun()).withRel(REL_CLIENTE));
         }
 
-        // Enlace a los detalles (usando el endpoint general de detalles)
-        compraModel.add(linkTo(methodOn(DetalleController.class).getAllDetalles()).withRel("detalles"));
+        // Link to detalles
+        compraModel.add(linkTo(DetalleController.class).withRel(REL_DETALLES));
 
         return compraModel;
     }
