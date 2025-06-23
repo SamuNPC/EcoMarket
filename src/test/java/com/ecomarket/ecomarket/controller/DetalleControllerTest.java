@@ -3,7 +3,8 @@ package com.ecomarket.ecomarket.controller;
 import com.ecomarket.ecomarket.model.Compra;
 import com.ecomarket.ecomarket.model.Detalle;
 import com.ecomarket.ecomarket.model.Producto;
-import com.ecomarket.ecomarket.repository.DetalleRepository;
+import com.ecomarket.ecomarket.service.DetalleService;
+import com.ecomarket.ecomarket.exception.ResourceNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -33,7 +35,7 @@ class DetalleControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private DetalleRepository detalleRepository;
+    private DetalleService detalleService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -76,69 +78,72 @@ class DetalleControllerTest {
     @Test
     void testGetAllDetalles() throws Exception {
         // Given
-        when(detalleRepository.findAll()).thenReturn(detallesList);
+        when(detalleService.getAllDetalles()).thenReturn(detallesList);
 
         // When & Then
         mockMvc.perform(get("/api/detalles"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].idDetalle", is(1)))
-                .andExpect(jsonPath("$[0].cantidad", is(3)))
-                .andExpect(jsonPath("$[0].precioUnitario", is(1500)))
-                .andExpect(jsonPath("$[0].metodoPago", is("EFECTIVO")))
-                .andExpect(jsonPath("$[1].idDetalle", is(2)))
-                .andExpect(jsonPath("$[1].cantidad", is(2)))
-                .andExpect(jsonPath("$[1].precioUnitario", is(2500)))
-                .andExpect(jsonPath("$[1].metodoPago", is("TARJETA")));
+                .andExpect(content().contentType("application/hal+json"))
+                .andExpect(jsonPath("$._embedded.detalleList", hasSize(2)))
+                .andExpect(jsonPath("$._embedded.detalleList[0].idDetalle", is(1)))
+                .andExpect(jsonPath("$._embedded.detalleList[0].cantidad", is(3)))
+                .andExpect(jsonPath("$._embedded.detalleList[0].precioUnitario", is(1500)))
+                .andExpect(jsonPath("$._embedded.detalleList[0].metodoPago", is("EFECTIVO")))
+                .andExpect(jsonPath("$._embedded.detalleList[1].idDetalle", is(2)))
+                .andExpect(jsonPath("$._embedded.detalleList[1].cantidad", is(2)))
+                .andExpect(jsonPath("$._embedded.detalleList[1].precioUnitario", is(2500)))
+                .andExpect(jsonPath("$._embedded.detalleList[1].metodoPago", is("TARJETA")));
 
-        verify(detalleRepository).findAll();
+        verify(detalleService).getAllDetalles();
     }
 
     @Test
     void testGetAllDetallesListaVacia() throws Exception {
         // Given
-        when(detalleRepository.findAll()).thenReturn(Arrays.asList());
+        when(detalleService.getAllDetalles()).thenReturn(Arrays.asList());
 
         // When & Then
         mockMvc.perform(get("/api/detalles"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(0)));
+                .andExpect(content().contentType("application/hal+json"));
 
-        verify(detalleRepository).findAll();
+        verify(detalleService).getAllDetalles();
     }
 
     @Test
     void testGetDetalleByIdExistente() throws Exception {
         // Given
         int idDetalle = 1;
-        when(detalleRepository.findById(idDetalle)).thenReturn(Arrays.asList(detalle1));
+        when(detalleService.getDetalleById(idDetalle)).thenReturn(detalle1);
 
         // When & Then
         mockMvc.perform(get("/api/detalles/{idDetalle}", idDetalle))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType("application/hal+json"))
                 .andExpect(jsonPath("$.idDetalle", is(1)))
                 .andExpect(jsonPath("$.cantidad", is(3)))
                 .andExpect(jsonPath("$.precioUnitario", is(1500)))
                 .andExpect(jsonPath("$.metodoPago", is("EFECTIVO")));
 
-        verify(detalleRepository).findById(idDetalle);
+        verify(detalleService).getDetalleById(idDetalle);
     }
 
     @Test
     void testGetDetalleByIdNoExistente() throws Exception {
         // Given
         int idDetalle = 999;
-        when(detalleRepository.findById(idDetalle)).thenReturn(Arrays.asList());
+        when(detalleService.getDetalleById(idDetalle))
+                .thenThrow(new ResourceNotFoundException("Detalle", "ID", idDetalle));
 
         // When & Then
         mockMvc.perform(get("/api/detalles/{idDetalle}", idDetalle))
-                .andExpect(status().isOk())
-                .andExpect(content().string(""));
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", is("Detalle no encontrado con ID: " + idDetalle)))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.path", is("/api/detalles/" + idDetalle)));
 
-        verify(detalleRepository).findById(idDetalle);
+        verify(detalleService).getDetalleById(idDetalle);
     }
 
     @Test
@@ -152,20 +157,20 @@ class DetalleControllerTest {
         nuevoDetalle.setCompra(compra);
         nuevoDetalle.setProducto(producto);
 
-        when(detalleRepository.save(any(Detalle.class))).thenReturn(nuevoDetalle);
+        when(detalleService.createDetalle(any(Detalle.class))).thenReturn(nuevoDetalle);
 
         // When & Then
         mockMvc.perform(post("/api/detalles")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType("application/hal+json")
                 .content(objectMapper.writeValueAsString(nuevoDetalle)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType("application/hal+json"))
                 .andExpect(jsonPath("$.idDetalle", is(3)))
                 .andExpect(jsonPath("$.cantidad", is(5)))
                 .andExpect(jsonPath("$.precioUnitario", is(3000)))
                 .andExpect(jsonPath("$.metodoPago", is("TRANSFERENCIA")));
 
-        verify(detalleRepository).save(any(Detalle.class));
+        verify(detalleService).createDetalle(any(Detalle.class));
     }
 
     @Test
@@ -180,22 +185,20 @@ class DetalleControllerTest {
         detalleActualizado.setCompra(compra);
         detalleActualizado.setProducto(producto);
 
-        when(detalleRepository.existsById(idDetalle)).thenReturn(true);
-        when(detalleRepository.save(any(Detalle.class))).thenReturn(detalleActualizado);
+        when(detalleService.updateDetalle(eq(idDetalle), any(Detalle.class))).thenReturn(detalleActualizado);
 
         // When & Then
         mockMvc.perform(put("/api/detalles/{idDetalle}", idDetalle)
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType("application/hal+json")
                 .content(objectMapper.writeValueAsString(detalleActualizado)))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType("application/hal+json"))
                 .andExpect(jsonPath("$.idDetalle", is(1)))
                 .andExpect(jsonPath("$.cantidad", is(10)))
                 .andExpect(jsonPath("$.precioUnitario", is(2000)))
                 .andExpect(jsonPath("$.metodoPago", is("CHEQUE")));
 
-        verify(detalleRepository).existsById(idDetalle);
-        verify(detalleRepository).save(any(Detalle.class));
+        verify(detalleService).updateDetalle(eq(idDetalle), any(Detalle.class));
     }
 
     @Test
@@ -206,30 +209,33 @@ class DetalleControllerTest {
         detalle.setIdDetalle(idDetalle);
         detalle.setCantidad(1);
 
-        when(detalleRepository.existsById(idDetalle)).thenReturn(false);
+        when(detalleService.updateDetalle(eq(idDetalle), any(Detalle.class)))
+                .thenThrow(new ResourceNotFoundException("Detalle", "ID", idDetalle));
 
         // When & Then
         mockMvc.perform(put("/api/detalles/{idDetalle}", idDetalle)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(detalle)))
-                .andExpect(status().isOk())
-                .andExpect(content().string(""));
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", is("Detalle no encontrado con ID: " + idDetalle)))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.path", is("/api/detalles/" + idDetalle)));
 
-        verify(detalleRepository).existsById(idDetalle);
-        verify(detalleRepository, never()).save(any(Detalle.class));
+        verify(detalleService).updateDetalle(eq(idDetalle), any(Detalle.class));
     }
 
     @Test
     void testDeleteDetalle() throws Exception {
         // Given
         int idDetalle = 1;
-        doNothing().when(detalleRepository).deleteById(idDetalle);
+        doNothing().when(detalleService).deleteDetalle(idDetalle);
 
         // When & Then
         mockMvc.perform(delete("/api/detalles/{idDetalle}", idDetalle))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
-        verify(detalleRepository).deleteById(idDetalle);
+        verify(detalleService).deleteDetalle(idDetalle);
     }
 
     @Test
@@ -241,16 +247,16 @@ class DetalleControllerTest {
         detalleEfectivo.setPrecioUnitario(1000);
         detalleEfectivo.setMetodoPago("EFECTIVO");
 
-        when(detalleRepository.save(any(Detalle.class))).thenReturn(detalleEfectivo);
+        when(detalleService.createDetalle(any(Detalle.class))).thenReturn(detalleEfectivo);
 
         // When & Then
         mockMvc.perform(post("/api/detalles")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType("application/hal+json")
                 .content(objectMapper.writeValueAsString(detalleEfectivo)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.metodoPago", is("EFECTIVO")));
 
-        verify(detalleRepository).save(any(Detalle.class));
+        verify(detalleService).createDetalle(any(Detalle.class));
     }
 
     @Test
@@ -262,17 +268,17 @@ class DetalleControllerTest {
         detalleMaximo.setPrecioUnitario(999999);
         detalleMaximo.setMetodoPago("TRANSFERENCIA");
 
-        when(detalleRepository.save(any(Detalle.class))).thenReturn(detalleMaximo);
+        when(detalleService.createDetalle(any(Detalle.class))).thenReturn(detalleMaximo);
 
         // When & Then
         mockMvc.perform(post("/api/detalles")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType("application/hal+json")
                 .content(objectMapper.writeValueAsString(detalleMaximo)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.idDetalle", is(999)))
                 .andExpect(jsonPath("$.cantidad", is(999)))
                 .andExpect(jsonPath("$.precioUnitario", is(999999)));
 
-        verify(detalleRepository).save(any(Detalle.class));
+        verify(detalleService).createDetalle(any(Detalle.class));
     }
 }

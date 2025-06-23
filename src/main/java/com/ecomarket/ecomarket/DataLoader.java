@@ -119,13 +119,19 @@ public class DataLoader implements CommandLineRunner {
         // Generar Clientes
         for (int i = 0; i < 50; i++) {
             Cliente cliente = new Cliente();
-            int rutnumerico = random.nextInt(9000000) + 1000000;
-            cliente.setRun(String.valueOf(rutnumerico));
-            cliente.setDv(utils.calcularDv(rutnumerico));
-            cliente.setNombres(faker.name().firstName());
-            cliente.setApellidos(faker.name().lastName());
-            clienteRepository.save(cliente);
+            while(cliente.getRun() == null || cliente.getRun().isEmpty()){
+                int rutnumerico = random.nextInt(9000000) + 1000000;
+                String Stringrut = String.valueOf(rutnumerico);
+                char dv = utils.calcularDv(rutnumerico);
+                if (utils.esRutValido(Stringrut, dv)){
+                    cliente.setRun(Stringrut);
+                    cliente.setDv(dv);
+                    cliente.setNombres(faker.name().firstName());
+                    cliente.setApellidos(faker.name().lastName());
+                    clienteRepository.save(cliente);}
+                    break;
         }
+    }
 
         // Generar compras
         List<Cliente> clientes = clienteRepository.findAll();
@@ -133,7 +139,7 @@ public class DataLoader implements CommandLineRunner {
         for (int i = 0; i < 10; i++) {
             Compra compra = new Compra();
             compra.setIdCompra(i + 1);
-            compra.setFechaCompra(new java.util.Date());
+            compra.setFechaCompra(faker.date().past(30, java.util.concurrent.TimeUnit.DAYS));
             compra.setCliente(clientes.get(random.nextInt(clientes.size())));
             compra.setNumeroFactura(String.valueOf(random.nextInt(999999999)));
             compra.setSucursal(sucursales.get(random.nextInt(sucursales.size())));
