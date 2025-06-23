@@ -1,71 +1,103 @@
 package com.ecomarket.ecomarket.controller;
 
-
 import com.ecomarket.ecomarket.model.Detalle;
-import com.ecomarket.ecomarket.repository.DetalleRepository;
+import com.ecomarket.ecomarket.service.DetalleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.Parameter;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/api/detalles")
 public class DetalleController {
 
-    @Autowired
-    private DetalleRepository detalleRepository;
+    private final DetalleService detalleService;
+
+    public DetalleController(DetalleService detalleService) {
+        this.detalleService = detalleService;
+    }
 
     @Operation(summary = "Obtener todos los detalles", description = "Devuelve una lista de todos los detalles registrados.")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Lista de detalles obtenida correctamente")
-    })
+    @ApiResponse(responseCode = "200", description = "Lista de detalles obtenida correctamente")
     @GetMapping
-    public List<Detalle> getAllDetalles() {
-        return detalleRepository.findAll();
+    public ResponseEntity<CollectionModel<EntityModel<Detalle>>> getAllDetalles() {
+        List<Detalle> detalles = detalleService.getAllDetalles();
+
+        List<EntityModel<Detalle>> detallesWithLinks = detalles.stream()
+                .map(this::toEntityModel)
+                .toList();
+
+        CollectionModel<EntityModel<Detalle>> collectionModel = CollectionModel.of(detallesWithLinks);
+        collectionModel.add(linkTo(methodOn(DetalleController.class).getAllDetalles()).withSelfRel());
+
+        return ResponseEntity.ok(collectionModel);
     }
 
     @Operation(summary = "Obtener detalle por ID", description = "Devuelve un detalle según su ID.")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Detalle encontrado o null si no existe")
-    })
+    @ApiResponse(responseCode = "200", description = "Detalle encontrado")
+    @ApiResponse(responseCode = "404", description = "Detalle no encontrado")
     @GetMapping("/{idDetalle}")
-    public Detalle getDetalleById(@Parameter(description = "ID del detalle") @PathVariable int idDetalle) {
-        List<Detalle> detalles = detalleRepository.findById(idDetalle);
-        return detalles.isEmpty() ? null : detalles.get(0);
+    public ResponseEntity<EntityModel<Detalle>> getDetalleById(
+            @Parameter(description = "ID del detalle") @PathVariable int idDetalle) {
+        Detalle detalle = detalleService.getDetalleById(idDetalle);
+        EntityModel<Detalle> detalleModel = toEntityModel(detalle);
+        return ResponseEntity.ok(detalleModel);
     }
 
     @Operation(summary = "Crear un nuevo detalle", description = "Crea un nuevo detalle.")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Detalle creado correctamente")
-    })
+    @ApiResponse(responseCode = "201", description = "Detalle creado correctamente")
     @PostMapping
-    public Detalle createDetalle(@RequestBody Detalle detalle) {
-        return detalleRepository.save(detalle);
+    public ResponseEntity<EntityModel<Detalle>> createDetalle(@RequestBody Detalle detalle) {
+        Detalle nuevoDetalle = detalleService.createDetalle(detalle);
+        EntityModel<Detalle> detalleModel = toEntityModel(nuevoDetalle);
+        return ResponseEntity.status(HttpStatus.CREATED).body(detalleModel);
     }
 
     @Operation(summary = "Actualizar detalle", description = "Actualiza los datos de un detalle existente por ID.")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Detalle actualizado correctamente o null si no existe")
-    })
+    @ApiResponse(responseCode = "200", description = "Detalle actualizado correctamente")
+    @ApiResponse(responseCode = "404", description = "Detalle no encontrado")
     @PutMapping("/{idDetalle}")
-    public Detalle updateDetalle(@Parameter(description = "ID del detalle a actualizar") @PathVariable int idDetalle, @RequestBody Detalle detalle) {
-        if (detalleRepository.existsById(idDetalle)) {
-            detalle.setIdDetalle(idDetalle);
-            return detalleRepository.save(detalle);
-        }
-        return null;
+    public ResponseEntity<EntityModel<Detalle>> updateDetalle(
+            @Parameter(description = "ID del detalle a actualizar") @PathVariable int idDetalle,
+            @RequestBody Detalle detalle) {
+        Detalle detalleActualizado = detalleService.updateDetalle(idDetalle, detalle);
+        EntityModel<Detalle> detalleModel = toEntityModel(detalleActualizado);
+        return ResponseEntity.ok(detalleModel);
     }
 
     @Operation(summary = "Eliminar detalle", description = "Elimina un detalle por su ID.")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Detalle eliminado correctamente")
-    })
+    @ApiResponse(responseCode = "204", description = "Detalle eliminado correctamente")
     @DeleteMapping("/{idDetalle}")
-    public void deleteDetalle(@Parameter(description = "ID del detalle a eliminar") @PathVariable int idDetalle) {
-        detalleRepository.deleteById(idDetalle);
+    public ResponseEntity<Void> deleteDetalle(
+            @Parameter(description = "ID del detalle a eliminar") @PathVariable int idDetalle) {
+        detalleService.deleteDetalle(idDetalle);
+        return ResponseEntity.noContent().build();
+    }
+
+    // Método auxiliar para crear EntityModel con enlaces HATEOAS
+    private EntityModel<Detalle> toEntityModel(Detalle detalle) {
+        EntityModel<Detalle> detalleModel = EntityModel.of(detalle)
+                .add(linkTo(methodOn(DetalleController.class).getDetalleById(detalle.getIdDetalle())).withSelfRel())
+                .add(linkTo(methodOn(DetalleController.class).updateDetalle(detalle.getIdDetalle(), detalle))
+                        .withRel("update"))
+                .add(linkTo(methodOn(DetalleController.class).deleteDetalle(detalle.getIdDetalle())).withRel("delete"))
+                .add(linkTo(methodOn(DetalleController.class).getAllDetalles()).withRel("all-detalles"));
+
+        // Enlace a la compra asociada
+        if (detalle.getCompra() != null) {
+            detalleModel.add(linkTo(methodOn(CompraController.class).getCompraById(detalle.getCompra().getIdCompra()))
+                    .withRel("compra"));
+        }
+
+        return detalleModel;
     }
 }
