@@ -5,15 +5,18 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.RepresentationModel;
 
 @Entity
 @Table(name = "SUCURSAL")
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Data
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Sucursal {
+public class Sucursal extends RepresentationModel<Sucursal> {
     @Id
     @Column(name = "ID_SUCURSAL")
     private int idSucursal;

@@ -4,11 +4,9 @@ import com.ecomarket.ecomarket.model.Cliente;
 import com.ecomarket.ecomarket.service.ClienteService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +22,11 @@ public class ClienteController {
 
     private final ClienteService clienteService;
 
+    // Constants for link relations
+    private static final String REL_CLIENTES = "clientes";
+    private static final String REL_UPDATE = "update";
+    private static final String REL_DELETE = "delete";
+
     public ClienteController(ClienteService clienteService) {
         this.clienteService = clienteService;
     }
@@ -35,11 +38,11 @@ public class ClienteController {
         List<Cliente> clientes = clienteService.getAllClientes();
 
         List<EntityModel<Cliente>> clientesWithLinks = clientes.stream()
-                .map(this::toEntityModel)
-                .collect(Collectors.toList());
+                .map(this::addLinksToCliente)
+                .toList();
 
         CollectionModel<EntityModel<Cliente>> collectionModel = CollectionModel.of(clientesWithLinks);
-        collectionModel.add(linkTo(methodOn(ClienteController.class).getAllClientes()).withSelfRel());
+        collectionModel.add(linkTo(ClienteController.class).withSelfRel());
 
         return ResponseEntity.ok(collectionModel);
     }
@@ -51,7 +54,7 @@ public class ClienteController {
     public ResponseEntity<EntityModel<Cliente>> getClienteByRun(
             @Parameter(description = "RUN del cliente") @PathVariable String run) {
         Cliente cliente = clienteService.getClienteByRun(run);
-        EntityModel<Cliente> clienteModel = toEntityModel(cliente);
+        EntityModel<Cliente> clienteModel = addLinksToCliente(cliente);
         return ResponseEntity.ok(clienteModel);
     }
 
@@ -62,7 +65,7 @@ public class ClienteController {
     @PostMapping
     public ResponseEntity<EntityModel<Cliente>> createCliente(@RequestBody Cliente cliente) {
         Cliente nuevoCliente = clienteService.createCliente(cliente);
-        EntityModel<Cliente> clienteModel = toEntityModel(nuevoCliente);
+        EntityModel<Cliente> clienteModel = addLinksToCliente(nuevoCliente);
         return ResponseEntity.status(HttpStatus.CREATED).body(clienteModel);
     }
 
@@ -74,7 +77,7 @@ public class ClienteController {
             @Parameter(description = "RUN del cliente a actualizar") @PathVariable String run,
             @RequestBody Cliente cliente) {
         Cliente clienteActualizado = clienteService.updateCliente(run, cliente);
-        EntityModel<Cliente> clienteModel = toEntityModel(clienteActualizado);
+        EntityModel<Cliente> clienteModel = addLinksToCliente(clienteActualizado);
         return ResponseEntity.ok(clienteModel);
     }
 
@@ -87,14 +90,13 @@ public class ClienteController {
         return ResponseEntity.noContent().build();
     }
 
-    // Método auxiliar para crear EntityModel con enlaces HATEOAS
-    private EntityModel<Cliente> toEntityModel(Cliente cliente) {
+    // Helper method to add HATEOAS links to Cliente
+    private EntityModel<Cliente> addLinksToCliente(Cliente cliente) {
         return EntityModel.of(cliente)
-                .add(linkTo(methodOn(ClienteController.class).getClienteByRun(cliente.getRun())).withSelfRel())
-                .add(linkTo(methodOn(ClienteController.class).updateCliente(cliente.getRun(), cliente))
-                        .withRel("update"))
-                .add(linkTo(methodOn(ClienteController.class).deleteCliente(cliente.getRun())).withRel("delete"))
-                .add(linkTo(methodOn(ClienteController.class).getAllClientes()).withRel("all-clientes"));
+                .add(linkTo(ClienteController.class).slash(cliente.getRun()).withSelfRel())
+                .add(linkTo(ClienteController.class).slash(cliente.getRun()).withRel(REL_UPDATE))
+                .add(linkTo(ClienteController.class).slash(cliente.getRun()).withRel(REL_DELETE))
+                .add(linkTo(ClienteController.class).withRel(REL_CLIENTES));
     }
 
 }

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.Date;
 import java.util.ArrayList;
@@ -17,7 +19,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Compra {
+@EqualsAndHashCode(callSuper = false)
+public class Compra extends RepresentationModel<Compra> {
 
     @Id
     @Column(name = "ID_COMPRA")

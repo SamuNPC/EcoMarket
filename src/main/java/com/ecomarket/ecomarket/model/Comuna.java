@@ -5,21 +5,24 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import org.springframework.hateoas.RepresentationModel;
 
 @Entity
 @Table(name = "COMUNA")
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Data
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class Comuna {
+public class Comuna extends RepresentationModel<Comuna> {
     @Id
     @Column(name = "ID_COMUNA")
     private int idComuna;

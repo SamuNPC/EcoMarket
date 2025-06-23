@@ -3,17 +3,20 @@ package com.ecomarket.ecomarket.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.hateoas.RepresentationModel;
 
 @Entity
 @Table(name = "PRODUCTO")
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Data
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Producto {
+public class Producto extends RepresentationModel<Producto> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,10 +1,12 @@
 package com.ecomarket.ecomarket.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.hateoas.RepresentationModel;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -13,7 +15,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Cliente {
+@EqualsAndHashCode(callSuper = false)
+public class Cliente extends RepresentationModel<Cliente> {
 
     @Id
     @Column(name = "RUN", nullable = false, length = 12)
