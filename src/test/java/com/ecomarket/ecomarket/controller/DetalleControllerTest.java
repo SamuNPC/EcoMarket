@@ -77,208 +77,345 @@ class DetalleControllerTest {
 
     @Test
     void testGetAllDetalles() throws Exception {
-        // Given
-        when(detalleService.getAllDetalles()).thenReturn(detallesList);
+        System.out.println("=== INICIANDO TEST: testGetAllDetalles ===");
+        System.out.flush();
+        try {
+            // Given
+            when(detalleService.getAllDetalles()).thenReturn(detallesList);
 
-        // When & Then
-        mockMvc.perform(get("/api/detalles"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/hal+json"))
-                .andExpect(jsonPath("$._embedded.detalleList", hasSize(2)))
-                .andExpect(jsonPath("$._embedded.detalleList[0].idDetalle", is(1)))
-                .andExpect(jsonPath("$._embedded.detalleList[0].cantidad", is(3)))
-                .andExpect(jsonPath("$._embedded.detalleList[0].precioUnitario", is(1500)))
-                .andExpect(jsonPath("$._embedded.detalleList[0].metodoPago", is("EFECTIVO")))
-                .andExpect(jsonPath("$._embedded.detalleList[1].idDetalle", is(2)))
-                .andExpect(jsonPath("$._embedded.detalleList[1].cantidad", is(2)))
-                .andExpect(jsonPath("$._embedded.detalleList[1].precioUnitario", is(2500)))
-                .andExpect(jsonPath("$._embedded.detalleList[1].metodoPago", is("TARJETA")));
+            // When & Then
+            mockMvc.perform(get("/api/detalles"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType("application/hal+json"))
+                    .andExpect(jsonPath("$._embedded.detalleList", hasSize(2)))
+                    .andExpect(jsonPath("$._embedded.detalleList[0].idDetalle", is(1)))
+                    .andExpect(jsonPath("$._embedded.detalleList[0].cantidad", is(3)))
+                    .andExpect(jsonPath("$._embedded.detalleList[0].precioUnitario", is(1500)))
+                    .andExpect(jsonPath("$._embedded.detalleList[0].metodoPago", is("EFECTIVO")))
+                    .andExpect(jsonPath("$._embedded.detalleList[1].idDetalle", is(2)))
+                    .andExpect(jsonPath("$._embedded.detalleList[1].cantidad", is(2)))
+                    .andExpect(jsonPath("$._embedded.detalleList[1].precioUnitario", is(2500)))
+                    .andExpect(jsonPath("$._embedded.detalleList[1].metodoPago", is("TARJETA")));
 
-        verify(detalleService).getAllDetalles();
+            verify(detalleService).getAllDetalles();
+
+            String successMessage = " EXITO: testGetAllDetalles - Se obtuvieron " + detallesList.size()
+                    + " detalles correctamente ";
+            System.out.println(successMessage);
+            System.out.flush();
+        } catch (Exception e) {
+            String errorMessage = " ERROR: testGetAllDetalles - " + e.getMessage() + " ";
+            System.err.println(errorMessage);
+            System.err.flush();
+            throw e;
+        }
     }
 
     @Test
     void testGetAllDetallesListaVacia() throws Exception {
-        // Given
-        when(detalleService.getAllDetalles()).thenReturn(Arrays.asList());
+        System.out.println("=== INICIANDO TEST: testGetAllDetallesListaVacia ===");
+        System.out.flush();
+        try {
+            // Given
+            when(detalleService.getAllDetalles()).thenReturn(Arrays.asList());
 
-        // When & Then
-        mockMvc.perform(get("/api/detalles"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/hal+json"));
+            // When & Then
+            mockMvc.perform(get("/api/detalles"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType("application/hal+json"));
 
-        verify(detalleService).getAllDetalles();
+            verify(detalleService).getAllDetalles();
+
+            String successMessage = " EXITO: testGetAllDetallesListaVacia - Lista vacía validada correctamente ";
+            System.out.println(successMessage);
+            System.out.flush();
+        } catch (Exception e) {
+            String errorMessage = " ERROR: testGetAllDetallesListaVacia - " + e.getMessage() + " ";
+            System.err.println(errorMessage);
+            System.err.flush();
+            throw e;
+        }
     }
 
     @Test
     void testGetDetalleByIdExistente() throws Exception {
-        // Given
-        int idDetalle = 1;
-        when(detalleService.getDetalleById(idDetalle)).thenReturn(detalle1);
+        System.out.println("=== INICIANDO TEST: testGetDetalleByIdExistente ===");
+        System.out.flush();
+        try {
+            // Given
+            int idDetalle = 1;
+            when(detalleService.getDetalleById(idDetalle)).thenReturn(detalle1);
 
-        // When & Then
-        mockMvc.perform(get("/api/detalles/{idDetalle}", idDetalle))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/hal+json"))
-                .andExpect(jsonPath("$.idDetalle", is(1)))
-                .andExpect(jsonPath("$.cantidad", is(3)))
-                .andExpect(jsonPath("$.precioUnitario", is(1500)))
-                .andExpect(jsonPath("$.metodoPago", is("EFECTIVO")));
+            // When & Then
+            mockMvc.perform(get("/api/detalles/{idDetalle}", idDetalle))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType("application/hal+json"))
+                    .andExpect(jsonPath("$.idDetalle", is(1)))
+                    .andExpect(jsonPath("$.cantidad", is(3)))
+                    .andExpect(jsonPath("$.precioUnitario", is(1500)))
+                    .andExpect(jsonPath("$.metodoPago", is("EFECTIVO")));
 
-        verify(detalleService).getDetalleById(idDetalle);
+            verify(detalleService).getDetalleById(idDetalle);
+
+            String successMessage = " EXITO: testGetDetalleByIdExistente - Detalle encontrado con ID " + idDetalle
+                    + " ";
+            System.out.println(successMessage);
+            System.out.flush();
+        } catch (Exception e) {
+            String errorMessage = " ERROR: testGetDetalleByIdExistente - " + e.getMessage() + " ";
+            System.err.println(errorMessage);
+            System.err.flush();
+            throw e;
+        }
     }
 
     @Test
     void testGetDetalleByIdNoExistente() throws Exception {
-        // Given
-        int idDetalle = 999;
-        when(detalleService.getDetalleById(idDetalle))
-                .thenThrow(new ResourceNotFoundException("Detalle", "ID", idDetalle));
+        System.out.println("=== INICIANDO TEST: testGetDetalleByIdNoExistente ===");
+        System.out.flush();
+        try {
+            // Given
+            int idDetalle = 999;
+            when(detalleService.getDetalleById(idDetalle))
+                    .thenThrow(new ResourceNotFoundException("Detalle", "ID", idDetalle));
 
-        // When & Then
-        mockMvc.perform(get("/api/detalles/{idDetalle}", idDetalle))
-                .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", is("Detalle no encontrado con ID: " + idDetalle)))
-                .andExpect(jsonPath("$.timestamp").exists())
-                .andExpect(jsonPath("$.path", is("/api/detalles/" + idDetalle)));
+            // When & Then
+            mockMvc.perform(get("/api/detalles/{idDetalle}", idDetalle))
+                    .andExpect(status().isNotFound())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(jsonPath("$.message", is("Detalle no encontrado con ID: " + idDetalle)))
+                    .andExpect(jsonPath("$.timestamp").exists())
+                    .andExpect(jsonPath("$.path", is("/api/detalles/" + idDetalle)));
 
-        verify(detalleService).getDetalleById(idDetalle);
+            verify(detalleService).getDetalleById(idDetalle);
+
+            String successMessage = " EXITO: testGetDetalleByIdNoExistente - Excepción manejada correctamente para ID "
+                    + idDetalle + " ";
+            System.out.println(successMessage);
+            System.out.flush();
+        } catch (Exception e) {
+            String errorMessage = " ERROR: testGetDetalleByIdNoExistente - " + e.getMessage() + " ";
+            System.err.println(errorMessage);
+            System.err.flush();
+            throw e;
+        }
     }
 
     @Test
     void testCreateDetalle() throws Exception {
-        // Given
-        Detalle nuevoDetalle = new Detalle();
-        nuevoDetalle.setIdDetalle(3);
-        nuevoDetalle.setCantidad(5);
-        nuevoDetalle.setPrecioUnitario(3000);
-        nuevoDetalle.setMetodoPago("TRANSFERENCIA");
-        nuevoDetalle.setCompra(compra);
-        nuevoDetalle.setProducto(producto);
+        System.out.println("=== INICIANDO TEST: testCreateDetalle ===");
+        System.out.flush();
+        try {
+            // Given
+            Detalle nuevoDetalle = new Detalle();
+            nuevoDetalle.setIdDetalle(3);
+            nuevoDetalle.setCantidad(5);
+            nuevoDetalle.setPrecioUnitario(3000);
+            nuevoDetalle.setMetodoPago("TRANSFERENCIA");
+            nuevoDetalle.setCompra(compra);
+            nuevoDetalle.setProducto(producto);
 
-        when(detalleService.createDetalle(any(Detalle.class))).thenReturn(nuevoDetalle);
+            when(detalleService.createDetalle(any(Detalle.class))).thenReturn(nuevoDetalle);
 
-        // When & Then
-        mockMvc.perform(post("/api/detalles")
-                .contentType("application/hal+json")
-                .content(objectMapper.writeValueAsString(nuevoDetalle)))
-                .andExpect(status().isCreated())
-                .andExpect(content().contentType("application/hal+json"))
-                .andExpect(jsonPath("$.idDetalle", is(3)))
-                .andExpect(jsonPath("$.cantidad", is(5)))
-                .andExpect(jsonPath("$.precioUnitario", is(3000)))
-                .andExpect(jsonPath("$.metodoPago", is("TRANSFERENCIA")));
+            // When & Then
+            mockMvc.perform(post("/api/detalles")
+                    .contentType("application/hal+json")
+                    .content(objectMapper.writeValueAsString(nuevoDetalle)))
+                    .andExpect(status().isCreated())
+                    .andExpect(content().contentType("application/hal+json"))
+                    .andExpect(jsonPath("$.idDetalle", is(3)))
+                    .andExpect(jsonPath("$.cantidad", is(5)))
+                    .andExpect(jsonPath("$.precioUnitario", is(3000)))
+                    .andExpect(jsonPath("$.metodoPago", is("TRANSFERENCIA")));
 
-        verify(detalleService).createDetalle(any(Detalle.class));
+            verify(detalleService).createDetalle(any(Detalle.class));
+
+            String successMessage = " EXITO: testCreateDetalle - Detalle creado correctamente con ID "
+                    + nuevoDetalle.getIdDetalle() + " ";
+            System.out.println(successMessage);
+            System.out.flush();
+        } catch (Exception e) {
+            String errorMessage = " ERROR: testCreateDetalle - " + e.getMessage() + " ";
+            System.err.println(errorMessage);
+            System.err.flush();
+            throw e;
+        }
     }
 
     @Test
     void testUpdateDetalleExistente() throws Exception {
-        // Given
-        int idDetalle = 1;
-        Detalle detalleActualizado = new Detalle();
-        detalleActualizado.setIdDetalle(idDetalle);
-        detalleActualizado.setCantidad(10);
-        detalleActualizado.setPrecioUnitario(2000);
-        detalleActualizado.setMetodoPago("CHEQUE");
-        detalleActualizado.setCompra(compra);
-        detalleActualizado.setProducto(producto);
+        System.out.println("=== INICIANDO TEST: testUpdateDetalleExistente ===");
+        System.out.flush();
+        try {
+            // Given
+            int idDetalle = 1;
+            Detalle detalleActualizado = new Detalle();
+            detalleActualizado.setIdDetalle(idDetalle);
+            detalleActualizado.setCantidad(10);
+            detalleActualizado.setPrecioUnitario(2000);
+            detalleActualizado.setMetodoPago("CHEQUE");
+            detalleActualizado.setCompra(compra);
+            detalleActualizado.setProducto(producto);
 
-        when(detalleService.updateDetalle(eq(idDetalle), any(Detalle.class))).thenReturn(detalleActualizado);
+            when(detalleService.updateDetalle(eq(idDetalle), any(Detalle.class))).thenReturn(detalleActualizado);
 
-        // When & Then
-        mockMvc.perform(put("/api/detalles/{idDetalle}", idDetalle)
-                .contentType("application/hal+json")
-                .content(objectMapper.writeValueAsString(detalleActualizado)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/hal+json"))
-                .andExpect(jsonPath("$.idDetalle", is(1)))
-                .andExpect(jsonPath("$.cantidad", is(10)))
-                .andExpect(jsonPath("$.precioUnitario", is(2000)))
-                .andExpect(jsonPath("$.metodoPago", is("CHEQUE")));
+            // When & Then
+            mockMvc.perform(put("/api/detalles/{idDetalle}", idDetalle)
+                    .contentType("application/hal+json")
+                    .content(objectMapper.writeValueAsString(detalleActualizado)))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType("application/hal+json"))
+                    .andExpect(jsonPath("$.idDetalle", is(1)))
+                    .andExpect(jsonPath("$.cantidad", is(10)))
+                    .andExpect(jsonPath("$.precioUnitario", is(2000)))
+                    .andExpect(jsonPath("$.metodoPago", is("CHEQUE")));
 
-        verify(detalleService).updateDetalle(eq(idDetalle), any(Detalle.class));
+            verify(detalleService).updateDetalle(eq(idDetalle), any(Detalle.class));
+
+            String successMessage = " EXITO: testUpdateDetalleExistente - Detalle actualizado correctamente con ID "
+                    + idDetalle + " ";
+            System.out.println(successMessage);
+            System.out.flush();
+        } catch (Exception e) {
+            String errorMessage = " ERROR: testUpdateDetalleExistente - " + e.getMessage() + " ";
+            System.err.println(errorMessage);
+            System.err.flush();
+            throw e;
+        }
     }
 
     @Test
     void testUpdateDetalleNoExistente() throws Exception {
-        // Given
-        int idDetalle = 999;
-        Detalle detalle = new Detalle();
-        detalle.setIdDetalle(idDetalle);
-        detalle.setCantidad(1);
+        System.out.println("=== INICIANDO TEST: testUpdateDetalleNoExistente ===");
+        System.out.flush();
+        try {
+            // Given
+            int idDetalle = 999;
+            Detalle detalle = new Detalle();
+            detalle.setIdDetalle(idDetalle);
+            detalle.setCantidad(1);
 
-        when(detalleService.updateDetalle(eq(idDetalle), any(Detalle.class)))
-                .thenThrow(new ResourceNotFoundException("Detalle", "ID", idDetalle));
+            when(detalleService.updateDetalle(eq(idDetalle), any(Detalle.class)))
+                    .thenThrow(new ResourceNotFoundException("Detalle", "ID", idDetalle));
 
-        // When & Then
-        mockMvc.perform(put("/api/detalles/{idDetalle}", idDetalle)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(detalle)))
-                .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", is("Detalle no encontrado con ID: " + idDetalle)))
-                .andExpect(jsonPath("$.timestamp").exists())
-                .andExpect(jsonPath("$.path", is("/api/detalles/" + idDetalle)));
+            // When & Then
+            mockMvc.perform(put("/api/detalles/{idDetalle}", idDetalle)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(detalle)))
+                    .andExpect(status().isNotFound())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(jsonPath("$.message", is("Detalle no encontrado con ID: " + idDetalle)))
+                    .andExpect(jsonPath("$.timestamp").exists())
+                    .andExpect(jsonPath("$.path", is("/api/detalles/" + idDetalle)));
 
-        verify(detalleService).updateDetalle(eq(idDetalle), any(Detalle.class));
+            verify(detalleService).updateDetalle(eq(idDetalle), any(Detalle.class));
+
+            String successMessage = " EXITO: testUpdateDetalleNoExistente - Excepción manejada correctamente para ID "
+                    + idDetalle + " ";
+            System.out.println(successMessage);
+            System.out.flush();
+        } catch (Exception e) {
+            String errorMessage = " ERROR: testUpdateDetalleNoExistente - " + e.getMessage() + " ";
+            System.err.println(errorMessage);
+            System.err.flush();
+            throw e;
+        }
     }
 
     @Test
     void testDeleteDetalle() throws Exception {
-        // Given
-        int idDetalle = 1;
-        doNothing().when(detalleService).deleteDetalle(idDetalle);
+        System.out.println("=== INICIANDO TEST: testDeleteDetalle ===");
+        System.out.flush();
+        try {
+            // Given
+            int idDetalle = 1;
+            doNothing().when(detalleService).deleteDetalle(idDetalle);
 
-        // When & Then
-        mockMvc.perform(delete("/api/detalles/{idDetalle}", idDetalle))
-                .andExpect(status().isNoContent());
+            // When & Then
+            mockMvc.perform(delete("/api/detalles/{idDetalle}", idDetalle))
+                    .andExpect(status().isNoContent());
 
-        verify(detalleService).deleteDetalle(idDetalle);
+            verify(detalleService).deleteDetalle(idDetalle);
+
+            String successMessage = " EXITO: testDeleteDetalle - Detalle eliminado correctamente con ID " + idDetalle
+                    + " ";
+            System.out.println(successMessage);
+            System.out.flush();
+        } catch (Exception e) {
+            String errorMessage = " ERROR: testDeleteDetalle - " + e.getMessage() + " ";
+            System.err.println(errorMessage);
+            System.err.flush();
+            throw e;
+        }
     }
 
     @Test
     void testCreateDetalleConDiferentesMetodosPago() throws Exception {
-        // Given
-        Detalle detalleEfectivo = new Detalle();
-        detalleEfectivo.setIdDetalle(4);
-        detalleEfectivo.setCantidad(1);
-        detalleEfectivo.setPrecioUnitario(1000);
-        detalleEfectivo.setMetodoPago("EFECTIVO");
+        System.out.println("=== INICIANDO TEST: testCreateDetalleConDiferentesMetodosPago ===");
+        System.out.flush();
+        try {
+            // Given
+            Detalle detalleEfectivo = new Detalle();
+            detalleEfectivo.setIdDetalle(4);
+            detalleEfectivo.setCantidad(1);
+            detalleEfectivo.setPrecioUnitario(1000);
+            detalleEfectivo.setMetodoPago("EFECTIVO");
 
-        when(detalleService.createDetalle(any(Detalle.class))).thenReturn(detalleEfectivo);
+            when(detalleService.createDetalle(any(Detalle.class))).thenReturn(detalleEfectivo);
 
-        // When & Then
-        mockMvc.perform(post("/api/detalles")
-                .contentType("application/hal+json")
-                .content(objectMapper.writeValueAsString(detalleEfectivo)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.metodoPago", is("EFECTIVO")));
+            // When & Then
+            mockMvc.perform(post("/api/detalles")
+                    .contentType("application/hal+json")
+                    .content(objectMapper.writeValueAsString(detalleEfectivo)))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.metodoPago", is("EFECTIVO")));
 
-        verify(detalleService).createDetalle(any(Detalle.class));
+            verify(detalleService).createDetalle(any(Detalle.class));
+
+            String successMessage = " EXITO: testCreateDetalleConDiferentesMetodosPago - Método de pago EFECTIVO validado ";
+            System.out.println(successMessage);
+            System.out.flush();
+        } catch (Exception e) {
+            String errorMessage = " ERROR: testCreateDetalleConDiferentesMetodosPago - " + e.getMessage() + " ";
+            System.err.println(errorMessage);
+            System.err.flush();
+            throw e;
+        }
     }
 
     @Test
     void testCreateDetalleConValoresMaximos() throws Exception {
-        // Given
-        Detalle detalleMaximo = new Detalle();
-        detalleMaximo.setIdDetalle(999);
-        detalleMaximo.setCantidad(999);
-        detalleMaximo.setPrecioUnitario(999999);
-        detalleMaximo.setMetodoPago("TRANSFERENCIA");
+        System.out.println("=== INICIANDO TEST: testCreateDetalleConValoresMaximos ===");
+        System.out.flush();
+        try {
+            // Given
+            Detalle detalleMaximo = new Detalle();
+            detalleMaximo.setIdDetalle(999);
+            detalleMaximo.setCantidad(999);
+            detalleMaximo.setPrecioUnitario(999999);
+            detalleMaximo.setMetodoPago("TRANSFERENCIA");
 
-        when(detalleService.createDetalle(any(Detalle.class))).thenReturn(detalleMaximo);
+            when(detalleService.createDetalle(any(Detalle.class))).thenReturn(detalleMaximo);
 
-        // When & Then
-        mockMvc.perform(post("/api/detalles")
-                .contentType("application/hal+json")
-                .content(objectMapper.writeValueAsString(detalleMaximo)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.idDetalle", is(999)))
-                .andExpect(jsonPath("$.cantidad", is(999)))
-                .andExpect(jsonPath("$.precioUnitario", is(999999)));
+            // When & Then
+            mockMvc.perform(post("/api/detalles")
+                    .contentType("application/hal+json")
+                    .content(objectMapper.writeValueAsString(detalleMaximo)))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.idDetalle", is(999)))
+                    .andExpect(jsonPath("$.cantidad", is(999)))
+                    .andExpect(jsonPath("$.precioUnitario", is(999999)));
 
-        verify(detalleService).createDetalle(any(Detalle.class));
+            verify(detalleService).createDetalle(any(Detalle.class));
+
+            String successMessage = " EXITO: testCreateDetalleConValoresMaximos - Valores máximos validados correctamente ";
+            System.out.println(successMessage);
+            System.out.flush();
+        } catch (Exception e) {
+            String errorMessage = " ERROR: testCreateDetalleConValoresMaximos - " + e.getMessage() + " ";
+            System.err.println(errorMessage);
+            System.err.flush();
+            throw e;
+        }
     }
 }

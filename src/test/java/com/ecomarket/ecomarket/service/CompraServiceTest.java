@@ -60,134 +60,250 @@ class CompraServiceTest {
 
     @Test
     void testGetAllCompras() {
-        // Given
-        when(compraRepository.findAll()).thenReturn(comprasList);
+        System.out.println("=== INICIANDO TEST: testGetAllCompras ===");
+        System.out.flush();
+        try {
+            // Given
+            when(compraRepository.findAll()).thenReturn(comprasList);
 
-        // When
-        List<Compra> resultado = compraService.getAllCompras();
+            // When
+            List<Compra> resultado = compraService.getAllCompras();
 
-        // Then
-        assertNotNull(resultado);
-        assertEquals(2, resultado.size());
-        assertEquals(1, resultado.get(0).getIdCompra());
-        assertEquals(2, resultado.get(1).getIdCompra());
-        assertEquals("F001", resultado.get(0).getNumeroFactura());
-        assertEquals("F002", resultado.get(1).getNumeroFactura());
-        verify(compraRepository).findAll();
+            // Then
+            assertNotNull(resultado);
+            assertEquals(2, resultado.size());
+            assertEquals(1, resultado.get(0).getIdCompra());
+            assertEquals(2, resultado.get(1).getIdCompra());
+            assertEquals("F001", resultado.get(0).getNumeroFactura());
+            assertEquals("F002", resultado.get(1).getNumeroFactura());
+            verify(compraRepository).findAll();
+
+            String successMessage = " EXITO: testGetAllCompras - Se obtuvieron " + resultado.size()
+                    + " compras correctamente ";
+            System.out.println(successMessage);
+            System.out.flush();
+        } catch (Exception e) {
+            String errorMessage = " ERROR: testGetAllCompras - " + e.getMessage() + " ";
+            System.err.println(errorMessage);
+            System.err.flush();
+            throw e;
+        }
     }
 
     @Test
     void testGetAllComprasListaVacia() {
-        // Given
-        when(compraRepository.findAll()).thenReturn(Arrays.asList());
+        System.out.println("=== INICIANDO TEST: testGetAllComprasListaVacia ===");
+        System.out.flush();
+        try {
+            // Given
+            when(compraRepository.findAll()).thenReturn(Arrays.asList());
 
-        // When
-        List<Compra> resultado = compraService.getAllCompras();
+            // When
+            List<Compra> resultado = compraService.getAllCompras();
 
-        // Then
-        assertNotNull(resultado);
-        assertTrue(resultado.isEmpty());
-        verify(compraRepository).findAll();
+            // Then
+            assertNotNull(resultado);
+            assertTrue(resultado.isEmpty());
+            verify(compraRepository).findAll();
+
+            String successMessage = " EXITO: testGetAllComprasListaVacia - Lista vacía validada correctamente ";
+            System.out.println(successMessage);
+            System.out.flush();
+        } catch (Exception e) {
+            String errorMessage = " ERROR: testGetAllComprasListaVacia - " + e.getMessage() + " ";
+            System.err.println(errorMessage);
+            System.err.flush();
+            throw e;
+        }
     }
 
     @Test
     void testGetCompraByIdExistente() {
-        // Given
-        int idCompra = 1;
-        when(compraRepository.findById(idCompra)).thenReturn(Optional.of(compra1));
+        System.out.println("=== INICIANDO TEST: testGetCompraByIdExistente ===");
+        System.out.flush();
+        try {
+            // Given
+            int idCompra = 1;
+            when(compraRepository.findById(idCompra)).thenReturn(Optional.of(compra1));
 
-        // When
-        Compra resultado = compraService.getCompraById(idCompra);
+            // When
+            Compra resultado = compraService.getCompraById(idCompra);
 
-        // Then
-        assertNotNull(resultado);
-        assertEquals(idCompra, resultado.getIdCompra());
-        assertEquals("F001", resultado.getNumeroFactura());
-        assertEquals(cliente, resultado.getCliente());
-        assertEquals(sucursal, resultado.getSucursal());
-        verify(compraRepository).findById(idCompra);
+            // Then
+            assertNotNull(resultado);
+            assertEquals(idCompra, resultado.getIdCompra());
+            assertEquals("F001", resultado.getNumeroFactura());
+            assertEquals(cliente, resultado.getCliente());
+            assertEquals(sucursal, resultado.getSucursal());
+            verify(compraRepository).findById(idCompra);
+
+            String successMessage = " EXITO: testGetCompraByIdExistente - Compra encontrada con ID " + idCompra + " ";
+            System.out.println(successMessage);
+            System.out.flush();
+        } catch (Exception e) {
+            String errorMessage = " ERROR: testGetCompraByIdExistente - " + e.getMessage() + " ";
+            System.err.println(errorMessage);
+            System.err.flush();
+            throw e;
+        }
     }
 
     @Test
     void testGetCompraByIdNoExistente() {
-        // Given
-        int idCompra = 999;
-        when(compraRepository.findById(idCompra)).thenReturn(Optional.empty());
+        System.out.println("=== INICIANDO TEST: testGetCompraByIdNoExistente ===");
+        System.out.flush();
+        try {
+            // Given
+            int idCompra = 999;
+            when(compraRepository.findById(idCompra)).thenReturn(Optional.empty());
 
-        // When & Then
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
-            compraService.getCompraById(idCompra);
-        });
+            // When & Then
+            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+                compraService.getCompraById(idCompra);
+            });
 
-        assertEquals("Compra no encontrado con ID: 999", exception.getMessage());
-        verify(compraRepository).findById(idCompra);
+            assertEquals("Compra no encontrado con ID: 999", exception.getMessage());
+            verify(compraRepository).findById(idCompra);
+
+            String successMessage = " EXITO: testGetCompraByIdNoExistente - Excepción manejada correctamente para ID "
+                    + idCompra + " ";
+            System.out.println(successMessage);
+            System.out.flush();
+        } catch (ResourceNotFoundException e) {
+            String successMessage = " EXITO: testGetCompraByIdNoExistente - Excepción esperada capturada correctamente ";
+            System.out.println(successMessage);
+            System.out.flush();
+            throw e;
+        } catch (Exception e) {
+            String errorMessage = " ERROR: testGetCompraByIdNoExistente - " + e.getMessage() + " ";
+            System.err.println(errorMessage);
+            System.err.flush();
+            throw e;
+        }
     }
 
     @Test
     void testRepositoryInteractions() {
-        // Given
-        when(compraRepository.findAll()).thenReturn(comprasList);
-        when(compraRepository.findById(1)).thenReturn(Optional.of(compra1));
+        System.out.println("=== INICIANDO TEST: testRepositoryInteractions ===");
+        System.out.flush();
+        try {
+            // Given
+            when(compraRepository.findAll()).thenReturn(comprasList);
+            when(compraRepository.findById(1)).thenReturn(Optional.of(compra1));
 
-        // When
-        compraService.getAllCompras();
-        compraService.getCompraById(1);
+            // When
+            compraService.getAllCompras();
+            compraService.getCompraById(1);
 
-        // Then
-        verify(compraRepository, times(1)).findAll();
-        verify(compraRepository, times(1)).findById(1);
-        verifyNoMoreInteractions(compraRepository);
+            // Then
+            verify(compraRepository, times(1)).findAll();
+            verify(compraRepository, times(1)).findById(1);
+            verifyNoMoreInteractions(compraRepository);
+
+            String successMessage = " EXITO: testRepositoryInteractions - Interacciones con repositorio verificadas ";
+            System.out.println(successMessage);
+            System.out.flush();
+        } catch (Exception e) {
+            String errorMessage = " ERROR: testRepositoryInteractions - " + e.getMessage() + " ";
+            System.err.println(errorMessage);
+            System.err.flush();
+            throw e;
+        }
     }
 
     @Test
     void testConstructorDependencyInjection() {
-        // Verificar que el servicio se construye correctamente
-        assertNotNull(compraService);
-        assertNotNull(compraRepository);
+        System.out.println("=== INICIANDO TEST: testConstructorDependencyInjection ===");
+        System.out.flush();
+        try {
+            // Verificar que el servicio se construye correctamente
+            assertNotNull(compraService);
+            assertNotNull(compraRepository);
+
+            String successMessage = " EXITO: testConstructorDependencyInjection - Inyección de dependencias verificada ";
+            System.out.println(successMessage);
+            System.out.flush();
+        } catch (Exception e) {
+            String errorMessage = " ERROR: testConstructorDependencyInjection - " + e.getMessage() + " ";
+            System.err.println(errorMessage);
+            System.err.flush();
+            throw e;
+        }
     }
 
     @Test
     void testGetCompraByIdConDatosCompletos() {
-        // Given
-        Date fechaEspecifica = new Date();
-        Compra compraCompleta = new Compra();
-        compraCompleta.setIdCompra(100);
-        compraCompleta.setFechaCompra(fechaEspecifica);
-        compraCompleta.setNumeroFactura("FACT-2023-100");
-        compraCompleta.setCliente(cliente);
-        compraCompleta.setSucursal(sucursal);
+        System.out.println("=== INICIANDO TEST: testGetCompraByIdConDatosCompletos ===");
+        System.out.flush();
+        try {
+            // Given
+            Date fechaEspecifica = new Date();
+            Compra compraCompleta = new Compra();
+            compraCompleta.setIdCompra(100);
+            compraCompleta.setFechaCompra(fechaEspecifica);
+            compraCompleta.setNumeroFactura("FACT-2023-100");
+            compraCompleta.setCliente(cliente);
+            compraCompleta.setSucursal(sucursal);
 
-        when(compraRepository.findById(100)).thenReturn(Optional.of(compraCompleta));
+            when(compraRepository.findById(100)).thenReturn(Optional.of(compraCompleta));
 
-        // When
-        Compra resultado = compraService.getCompraById(100);
+            // When
+            Compra resultado = compraService.getCompraById(100);
 
-        // Then
-        assertNotNull(resultado);
-        assertEquals(100, resultado.getIdCompra());
-        assertEquals(fechaEspecifica, resultado.getFechaCompra());
-        assertEquals("FACT-2023-100", resultado.getNumeroFactura());
-        assertEquals("12345678", resultado.getCliente().getRun());
-        assertEquals(1, resultado.getSucursal().getIdSucursal());
+            // Then
+            assertNotNull(resultado);
+            assertEquals(100, resultado.getIdCompra());
+            assertEquals(fechaEspecifica, resultado.getFechaCompra());
+            assertEquals("FACT-2023-100", resultado.getNumeroFactura());
+            assertEquals("12345678", resultado.getCliente().getRun());
+            assertEquals(1, resultado.getSucursal().getIdSucursal());
+
+            String successMessage = " EXITO: testGetCompraByIdConDatosCompletos - Datos completos validados correctamente ";
+            System.out.println(successMessage);
+            System.out.flush();
+        } catch (Exception e) {
+            String errorMessage = " ERROR: testGetCompraByIdConDatosCompletos - " + e.getMessage() + " ";
+            System.err.println(errorMessage);
+            System.err.flush();
+            throw e;
+        }
     }
 
     @Test
     void testGetCompraByIdConValoresLimite() {
-        // Test con ID 0
-        when(compraRepository.findById(0)).thenReturn(Optional.empty());
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
-            compraService.getCompraById(0);
-        });
-        assertEquals("Compra no encontrado con ID: 0", exception.getMessage());
+        System.out.println("=== INICIANDO TEST: testGetCompraByIdConValoresLimite ===");
+        System.out.flush();
+        try {
+            // Test con ID 0
+            when(compraRepository.findById(0)).thenReturn(Optional.empty());
+            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+                compraService.getCompraById(0);
+            });
+            assertEquals("Compra no encontrado con ID: 0", exception.getMessage());
 
-        // Test con ID negativo
-        when(compraRepository.findById(-1)).thenReturn(Optional.empty());
-        exception = assertThrows(ResourceNotFoundException.class, () -> {
-            compraService.getCompraById(-1);
-        });
-        assertEquals("Compra no encontrado con ID: -1", exception.getMessage());
+            // Test con ID negativo
+            when(compraRepository.findById(-1)).thenReturn(Optional.empty());
+            exception = assertThrows(ResourceNotFoundException.class, () -> {
+                compraService.getCompraById(-1);
+            });
+            assertEquals("Compra no encontrado con ID: -1", exception.getMessage());
 
-        verify(compraRepository).findById(0);
-        verify(compraRepository).findById(-1);
+            verify(compraRepository).findById(0);
+            verify(compraRepository).findById(-1);
+
+            String successMessage = " EXITO: testGetCompraByIdConValoresLimite - Valores límite validados correctamente ";
+            System.out.println(successMessage);
+            System.out.flush();
+        } catch (ResourceNotFoundException e) {
+            String successMessage = " EXITO: testGetCompraByIdConValoresLimite - Excepciones esperadas manejadas ";
+            System.out.println(successMessage);
+            System.out.flush();
+            throw e;
+        } catch (Exception e) {
+            String errorMessage = " ERROR: testGetCompraByIdConValoresLimite - " + e.getMessage() + " ";
+            System.err.println(errorMessage);
+            System.err.flush();
+            throw e;
+        }
     }
 }
